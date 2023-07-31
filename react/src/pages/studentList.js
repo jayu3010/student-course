@@ -14,11 +14,11 @@ const StudentList = () => {
         console.log("Invalid student ID:", studentId);
         return;
       }
+      console.log("studentId", studentId)
+      const response = await axios.delete('http://localhost:3008/api/student/delete-student', { data: { id: studentId } });
 
-      const response = await axios.delete(`http://localhost:3008/api/student/delete-student/${studentId}`);
-
-      console.log("response", response?.data?.data);
-      if (response.data.data === 200) {
+      console.log("response", response);
+      if (response?.data?.code === 200) {
         getStudents(); // Refresh the student list after successful deletion
       }
     } catch (error) {

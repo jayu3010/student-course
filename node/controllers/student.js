@@ -73,6 +73,7 @@ exports.addStudent = async (req, res) => {
             status: 'Student Added Successfully',
         });
     } catch (err) {
+        console.log(err)
         res.json({
             code: 400,
             status: "failed",
@@ -84,10 +85,8 @@ exports.addStudent = async (req, res) => {
 // Delete a student
 exports.deleteStudent = async (req, res) => {
     var id = req?.body?.id;
-    var id2 = req?.query?.id; // Access the id from URL parameters
-    var id3 = req?.params?.id; // Access the id from URL parameters
-
-    console.log("in backend", id2, id3);
+console.log("iddddddd",id)
+    console.log("in backend");
     try {
         let data = await studentdetails.deleteOne({ _id: id });
         console.log(data);

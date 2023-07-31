@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
-
   DatePicker,
   Form,
   Input,
@@ -21,17 +20,18 @@ const StudentForm = () => {
   const { id } = useParams();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
+  const [courseLoad, setCourseLoad] = useState(true);
 
   const [editStudentDetails, setEditStudentDetails] = useState();
   const [selectedValues, setSelectedValues] = useState({
-    end_date: '',
-    start_date: '',
-    branch: '',
-    course: '',
-    batch: '',
-    status: '',
-    city: '',
-    state: '',
+    end_date: '10-Jun-23',
+    start_date: '10-Jun-23',
+    branch: 'Bandra',
+    course: 'IELTS',
+    batch: 'Morning',
+    status: 'Active',
+    city: 'Gujarat',
+    state: 'Baroda',
   });
   const [courseData, setCourseData] = useState([]);
 
@@ -73,7 +73,7 @@ const StudentForm = () => {
   // GMAT
   // SAT
   // IELTS
-  
+
 
   const handleSelect = (value, name) => {
     console.log(value, name)
@@ -83,45 +83,51 @@ const StudentForm = () => {
     }));
   };
 
- // Function to handle form submission
- const onFinish = async (values) => {
-  // Merge the form values and selectedValues
-  
-var mergedValues = { ...values, ...selectedValues };
-console.log('Form values:', values);
-console.log('Selected values:', selectedValues);
-console.log('Merged values:', mergedValues);
-try {
-    if(id){
-     mergedValues = { ...values, ...selectedValues,id };
+  // Function to handle form submission
+  const onFinish = async (values) => {
+    // Merge the form values and selectedValues
+    var mergedValues = { ...values, ...selectedValues };
+    console.log('Form values:', values);
+    console.log('Selected values:', mergedValues);
+    try {
+      if (id) {
+    var editData = {id:id, ...values, ...selectedValues };
+console.log(editData)
+        // Editing existing student
+        const editResponse = await axios.put('http://localhost:3008/api/student/editstudent', editData);
+        console.log("editResponse", editResponse);
+        if(editResponse.data.code==200){
+          navigate("/student-form" )
 
-    const editResponse = await axios.put('http://localhost:3008/api/student/editstudent', mergedValues);
-console.log("editResponse",editResponse)
-    }else{
-
-      const response = await axios.post('http://localhost:3008/api/student/addstudent', mergedValues);
-      console.log("response", response, response?.data?.data?._id, response?.data?.data?.course)
-      if (response.data.code === 200) {
-        navigate("/fees", {
-          state: {
-            student_id: response?.data?.data?._id,
-            course_id: response?.data?.data?.course,
-          },
-        });
+        }
+      } else {
+        // Adding a new student
+        const response = await axios.post('http://localhost:3008/api/student/addstudent', mergedValues);
+        console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
+        if (response.data.code === 200) {
+          navigate("/fees", {
+            state: {
+              student_id: response?.data?.data?._id,
+              course_id: response?.data?.data?.course,
+            },
+          });
+        }
       }
+    } catch (error) {
+      console.log('Student list error:', error);
     }
-  } catch (error) {
-    console.log('Student list error:', error);
-  }
-};
+  };
+
   const getCourseDetails = async () => {
     // Merge the form values and selectedValues
     try {
       const response = await axios.get('http://localhost:3008/api/course/getcourse');
       console.log("response", response?.data?.data)
-      if(response?.data?.code==200){
+      if (response?.data?.code == 200) {
+        setCourseLoad(false)
         setCourseData(response?.data?.data)
       }
+
     } catch (error) {
       console.log('Student list error:', error);
     }
@@ -143,20 +149,16 @@ console.log("editResponse",editResponse)
       if (response?.data?.code === 200) {
         console.log("response", response?.data?.data);
         setEditStudentDetails(response?.data?.data);
-        form.setFieldsValue({
-          fname: response?.data?.data?.fname,
-          lname: response?.data?.data?.lname,
-          address: response?.data?.data?.address,
+        setSelectedValues({
+          branch: response?.data?.data?.branch,
+          course: response?.data?.data?.course,
+          batch: response?.data?.data?.batch,
+          status: response?.data?.data?.status,
           city: response?.data?.data?.city,
-          dob: response?.data?.data?.dob,
-          email: response?.data?.data?.email,
-          end_date: response?.data?.data?.end_date,
-          gender: response?.data?.data?.gender,
           state: response?.data?.data?.state,
-          mobile_no: response?.data?.data?.mobile_no,
-          pincode: response?.data?.data?.pincode,
-        });
-        
+        })
+       
+
         setLoading(false);
       }
     } catch (error) {
@@ -170,7 +172,7 @@ console.log("editResponse",editResponse)
       key: 'start_date',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ?editStudentDetails?.start_date:'10-Jun-23'} onChange={(value) => handleSelect(value, 'start_date')}>
+          <Select defaultValue={id ? editStudentDetails?.start_date : selectedValues?.start_date} onChange={(value) => handleSelect(value, 'start_date')}>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
 
@@ -185,7 +187,7 @@ console.log("editResponse",editResponse)
       key: 'end_date',
       render: (_, record) => {
         return (
-          <Select size='large' defaultValue={id ?editStudentDetails?.end_date:'10-Jun-23'} onChange={(value) => handleSelect(value, 'end_date')}>
+          <Select size='large' defaultValue={id ? editStudentDetails?.end_date : selectedValues?.end_date} onChange={(value) => handleSelect(value, 'end_date')}>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
 
@@ -200,7 +202,7 @@ console.log("editResponse",editResponse)
       key: 'branch',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ?editStudentDetails?.branch:'Bandra'} onChange={(value) => handleSelect(value, 'branch')}>
+          <Select defaultValue={id ? editStudentDetails?.branch : selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
             <Select.Option value="Bandra">Bandra</Select.Option>
             <Select.Option value="Kandlivali">Kandlivali</Select.Option>
             <Select.Option value="Andheri">Andheri</Select.Option>
@@ -218,13 +220,12 @@ console.log("editResponse",editResponse)
       dataIndex: 'course_name',
       key: 'course_name',
       render: (_, record) => {
-        console.log("courseDatacourseData",courseData[0]?.course_name)
+        
+        console.log("courseDatacourseData", courseData[0]?.course_name)
         return (
           <Select defaultValue={courseData[0]?.course_name} onChange={(value) => handleSelect(value, 'course')}>
-
             {
-              id ? <Select.Option value={editStudentDetails?.course?._id}>{editStudentDetails?.course?.course_name}</Select.Option>
-                : courseData?.map((cItem) => {
+             courseData?.map((cItem) => {
                   return (
                     <>
                       <Select.Option value={cItem?._id}>{cItem?.course_name}</Select.Option>
@@ -245,7 +246,7 @@ console.log("editResponse",editResponse)
       key: 'batch',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ?editStudentDetails?.batch:'Morning'} onChange={(value) => handleSelect(value, 'batch')}>
+          <Select defaultValue={id ? editStudentDetails?.batch : selectedValues?.batch} onChange={(value) => handleSelect(value, 'batch')}>
             <Select.Option value="Morning">Morning</Select.Option>
             <Select.Option value="Noon">Noon</Select.Option>
             <Select.Option value="Evening">Evening</Select.Option>
@@ -261,7 +262,7 @@ console.log("editResponse",editResponse)
       key: 'status',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ? editStudentDetails?.status:'Active'} onChange={(value) => handleSelect(value, 'status')}>
+          <Select value={id ? editStudentDetails?.status : selectedValues?.status}  onChange={(value) => handleSelect(value, 'status')}>
             <Select.Option value="Active">Active</Select.Option>
             <Select.Option value="InActive">Inactive</Select.Option>
 
@@ -272,7 +273,7 @@ console.log("editResponse",editResponse)
 
     },
   ];
-  if (loading) {
+  if (loading || courseLoad) {
     return <h4>Loading</h4>
   }
   return (
@@ -286,7 +287,7 @@ console.log("editResponse",editResponse)
           onFinish={onFinish}
           initialValues={{
             fname: editStudentDetails?.fname,
-             lname: editStudentDetails?.lname,
+            lname: editStudentDetails?.lname,
             address: editStudentDetails?.address,
             city: editStudentDetails?.city,
             course: editStudentDetails?.course,

@@ -20,21 +20,7 @@ const Fees = () => {
   const [courseName, setCourseName] = useState();
   const [studentDetails, setStudentDetails] = useState();
 
-  // Sample data for the Table (you may need to fetch it from the API)
-  const dataSource = [
-    {
-      key: '1',
-      paid_date: '7-Jun-23',
-      course: 'GRE',
-      fees: 7000,
-      discount: '500',
-      net_amount: '6,500',
-      tax: '18%',
-      total_due: '7,670',
-      paid_amt: '5,670',
-      balance: '2,000',
-    },
-  ];
+
 
   // Fetch student details by course ID
   const getStudentByCourse = async (id) => {
@@ -150,7 +136,7 @@ const Fees = () => {
       key: 'fees_amt',
       render: (_, record) => {
         return (
-          <Input onChange={(e) => handleSelect(e.target.value, 'fees_amt')} />
+          <Input value={selectedValues?.fees_amt}  onChange={(e) => handleSelect(e.target.value, 'fees_amt')} />
         )
       }
     },
@@ -160,7 +146,7 @@ const Fees = () => {
       key: 'discount',
       render: (_, record) => {
         return (
-          <Input onChange={(e) => handleSelect(e.target.value, 'discount')} />
+          <Input value={selectedValues?.discount} onChange={(e) => handleSelect(e.target.value, 'discount')} />
         )
       }
 
@@ -249,7 +235,18 @@ const Fees = () => {
     };
     try {
       const response = await axios.post('http://localhost:3008/api/fees/getfeesbystudent', body);
+console.log("response?.data?.data",response?.data?.data)
       setCourseName(response?.data?.data[0]?.course);
+     setSelectedValues({
+      date: null,
+      fees_amt: response?.data?.data[0].fees_amt,
+      discount: response?.data?.data[0].discount,
+      net_amount: response?.data?.data[0].net_amount,
+      tax: response?.data?.data[0].tax,
+      total_due: response?.data?.data[0].total_due,
+      paid_amt: response?.data?.data[0].paid_amt,
+      balance: response?.data?.data[0].balance,
+      })
     } catch (error) {
       console.log('Student list error:', error);
     }
