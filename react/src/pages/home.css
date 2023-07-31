@@ -1,0 +1,29 @@
+.form-group{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.form-wrapper .form-title {
+    flex: 0 0 calc(33.33% - 25px);
+    text-decoration: none;
+    border: 1px solid;
+    padding: 10px;
+}
+.container {
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.form-title{
+    flex: 0 0 33.33%;
+}
+.student-info form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.form-controller {
+    flex: 0 0 50%;
+}
