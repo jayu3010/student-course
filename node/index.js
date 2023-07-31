@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require("mongoose");
 const cors = require('cors');
+require('dotenv').config()
 
 const app = express()
 app.use(express.json());
@@ -10,7 +11,7 @@ const Port=3008
 
  async function connectToMongoDB() {
     try {
-      await mongoose.connect('mongodb+srv://jayesh:rsf2VC64msx16Wga@cluster0.nzcmdzx.mongodb.net/STUDENT-COURSE?retryWrites=true&w=majority');
+      await mongoose.connect(process.env.MONGOURL);
       console.log('Connected to MongoDB');
 
     } catch (err) {
@@ -26,11 +27,3 @@ const Port=3008
 app.listen(Port, () => {
     console.log(`Server is running on port ${Port}...`)
 })
-
-
-
-
-// mongosh "mongodb+srv://cluster0.nzcmdzx.mongodb.net/" --apiVersion 1 --username jayesh
-// jayesh
-// rsf2VC64msx16Wga 
-// studentform
