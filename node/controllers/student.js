@@ -89,7 +89,7 @@ exports.deleteStudent = async (req, res) => {
 
     console.log("in backend", id2, id3);
     try {
-        let data = await studentdetails.findByIdAndRemove({ _id: id });
+        let data = await studentdetails.deleteOne({ _id: id });
         console.log(data);
         res.json({
             code: 200,
@@ -149,3 +149,52 @@ exports.getStudentReport = async (req, res) => {
         });
     }
 };
+
+exports.editStudent = async (req, res) => {
+    try {
+        let update = {
+            // Map request body properties to corresponding schema fields
+            fname: req.body.fname,
+            lname: req.body.lname,
+            dob: req.body.dob,
+            gender: req.body.gender,
+            mobile_no: req.body.mobile_no,
+            address: req.body.address,
+            email: req.body.email,
+            pincode: req.body.pincode,
+            city: req.body.city,
+            state: req.body.state,
+            start_date: req.body.start_date,
+            end_date: req.body.end_date,
+            branch: req.body.branch,
+            course: req.body.course,
+            batch: req.body.batch,
+            status: req.body.status,
+        };
+
+        // Use await and set the "new" option to true to get the updated data
+        const data = await studentdetails.findByIdAndUpdate(req.body.id, update, { new: true });
+
+        if (!data) {
+            // Handle the case when the student with the given id is not found
+            return res.status(404).json({
+                code: 404,
+                status: 'failed',
+                message: 'Student not found',
+            });
+        }
+
+        res.json({
+            code: 200,
+            data: data,
+            status: 'Student Updated Successfully',
+        });
+    } catch (err) {
+        res.status(400).json({
+            code: 400,
+            status: "failed",
+            message: err.message,
+        });
+    }
+};
+
