@@ -126,6 +126,7 @@ console.log(editData)
       if (response?.data?.code == 200) {
         setCourseLoad(false)
         setCourseData(response?.data?.data)
+        setSelectedValues({...selectedValues,course:response?.data?.data[0]?._id})
       }
 
     } catch (error) {
@@ -144,11 +145,14 @@ console.log(editData)
 
   const fetchStudentDetailsById = async (id) => {
     const body = { id };
+    setCourseLoad(true)
+
     try {
       const response = await axios.post('https://student-course-ru57.vercel.app/api/student/getstudentbyid', body);
       if (response?.data?.code === 200) {
         console.log("response", response?.data?.data);
         setEditStudentDetails(response?.data?.data);
+        setCourseLoad(false)
         setSelectedValues({
           branch: response?.data?.data?.branch,
           course: response?.data?.data?.course,
@@ -220,10 +224,9 @@ console.log(editData)
       dataIndex: 'course_name',
       key: 'course_name',
       render: (_, record) => {
-        
-        console.log("courseDatacourseData", courseData[0]?.course_name)
-        return (
-          <Select defaultValue={courseData[0]?.course_name} onChange={(value) => handleSelect(value, 'course')}>
+        console.log("courseData[0]?._id",courseData[0]?._id)
+                return (
+          <Select defaultValue={id ? editStudentDetails?.course?.course_name: courseData[0]?._id} onChange={(value) => handleSelect(value, 'course')}>
             {
              courseData?.map((cItem) => {
                   return (
@@ -279,6 +282,8 @@ console.log(editData)
   return (
     <div className='container'>
       <div className='student-info'>
+      <Button onClick={() => navigate("/student-form")}>Go to Home</Button>
+
         <Form
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 14 }}
@@ -290,9 +295,7 @@ console.log(editData)
             lname: editStudentDetails?.lname,
             address: editStudentDetails?.address,
             city: editStudentDetails?.city,
-            course: editStudentDetails?.course,
             email: editStudentDetails?.email,
-            end_date: editStudentDetails?.end_date,
             gender: editStudentDetails?.gender,
             state: editStudentDetails?.state,
             mobile_no: editStudentDetails?.mobile_no,

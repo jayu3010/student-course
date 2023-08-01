@@ -11,7 +11,7 @@ var Schema=mongoose.Schema
 const student_modal = new Schema({
    fname: {type: String},
    lname: {type: String},
-   dob: {type: String},
+   dob: {type: Date},
    gender: {type: String,enum: genderEnum},
    mobile_no: {type: Number},
    address: {type: String},
