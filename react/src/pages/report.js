@@ -54,7 +54,7 @@ const Report = () => {
   // Function to generate the report
   const generateReportData = async () => {
     try {
-      const response = await axios.post('http://localhost:3008/api/student/genrate-report', selectedValues);
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/student/genrate-report', selectedValues);
       console.log("response", response?.data?.data);
 
       if (response?.data?.code === 200) {

@@ -28,7 +28,7 @@ const Fees = () => {
       id: id,
     };
     try {
-      const response = await axios.post('http://localhost:3008/api/course/getcoursebyid', body);
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/course/getcoursebyid', body);
       console.log("response", response?.data?.data);
       setCourseName(response?.data?.data);
     } catch (error) {
@@ -88,7 +88,7 @@ const Fees = () => {
   // Fetch student details
   const getStudent = async () => {
     try {
-      const response = await axios.get('http://localhost:3008/api/student/getStudent');
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
       console.log("response", response?.data?.data);
       setStudentDetails(response?.data?.data);
     } catch (error) {
@@ -217,7 +217,7 @@ const Fees = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3008/api/fees/addfees', mergedValues);
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/addfees', mergedValues);
       console.log("response", response);
       if (response.data.code === 200) {
         console.log("success");
@@ -234,7 +234,7 @@ const Fees = () => {
       student_id: id,
     };
     try {
-      const response = await axios.post('http://localhost:3008/api/fees/getfeesbystudent', body);
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/getfeesbystudent', body);
 console.log("response?.data?.data",response?.data?.data)
       setCourseName(response?.data?.data[0]?.course);
      setSelectedValues({

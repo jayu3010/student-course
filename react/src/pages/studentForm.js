@@ -94,7 +94,7 @@ const StudentForm = () => {
     var editData = {id:id, ...values, ...selectedValues };
 console.log(editData)
         // Editing existing student
-        const editResponse = await axios.put('http://localhost:3008/api/student/editstudent', editData);
+        const editResponse = await axios.put('https://student-course-ru57.vercel.app/api/student/editstudent', editData);
         console.log("editResponse", editResponse);
         if(editResponse.data.code==200){
           navigate("/student-form" )
@@ -102,7 +102,7 @@ console.log(editData)
         }
       } else {
         // Adding a new student
-        const response = await axios.post('http://localhost:3008/api/student/addstudent', mergedValues);
+        const response = await axios.post('https://student-course-ru57.vercel.app/api/student/addstudent', mergedValues);
         console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
         if (response.data.code === 200) {
           navigate("/fees", {
@@ -121,7 +121,7 @@ console.log(editData)
   const getCourseDetails = async () => {
     // Merge the form values and selectedValues
     try {
-      const response = await axios.get('http://localhost:3008/api/course/getcourse');
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/course/getcourse');
       console.log("response", response?.data?.data)
       if (response?.data?.code == 200) {
         setCourseLoad(false)
@@ -145,7 +145,7 @@ console.log(editData)
   const fetchStudentDetailsById = async (id) => {
     const body = { id };
     try {
-      const response = await axios.post('http://localhost:3008/api/student/getstudentbyid', body);
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/student/getstudentbyid', body);
       if (response?.data?.code === 200) {
         console.log("response", response?.data?.data);
         setEditStudentDetails(response?.data?.data);

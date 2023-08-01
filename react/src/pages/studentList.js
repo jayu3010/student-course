@@ -14,8 +14,8 @@ const StudentList = () => {
         console.log("Invalid student ID:", studentId);
         return;
       }
-      console.log("studentId", studentId)
-      const response = await axios.delete('http://localhost:3008/api/student/delete-student', { data: { id: studentId } });
+// local url:-http://localhost:3008/api/student/delete-student
+      const response = await axios.delete('https://student-course-ru57.vercel.app/api/student/delete-student', { data: { id: studentId } });
 
       console.log("response", response);
       if (response?.data?.code === 200) {
@@ -56,7 +56,7 @@ const StudentList = () => {
   // Function to fetch the list of students
   const getStudents = async () => {
     try {
-      const response = await axios.get('http://localhost:3008/api/student/getStudent');
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
       console.log("response", response?.data?.data);
       setStudents(response?.data?.data);
     } catch (error) {
