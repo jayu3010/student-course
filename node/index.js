@@ -8,10 +8,11 @@ app.use(express.json());
 const router = require('./routes/index');
 app.use(cors());
 const Port=3008
-
+ 
  async function connectToMongoDB() {
     try {
-      await mongoose.connect(process.env.MONGOURL);
+      console.log("process.env.MONGOURL",process.env.MONGOURL)
+      const res=await mongoose.connect(process.env.MONGOURL);
       console.log('Connected to MongoDB');
 
     } catch (err) {
@@ -21,7 +22,9 @@ const Port=3008
   
   connectToMongoDB();
   app.use('/api',router)
-  
+  app.get('/',function(req,res){
+res.send("Success")
+  })
   
   
 app.listen(Port, () => {
