@@ -49,42 +49,37 @@ const Fees = () => {
       const { fees_amt, discount } = selectedValues;
       if (fees_amt !== null && discount !== null) {
         const netAmount = fees_amt - discount;
-        console.log("netAmount",netAmount)
         setSelectedValues((prevValues) => ({
           ...prevValues,
           net_amount: String(netAmount),
         }));
       }
     };
-
+  
     // Calculate total_due when net_amount and tax change
     const calculateTotalDue = () => {
       const { net_amount, tax } = selectedValues;
       if (net_amount !== null && tax !== null) {
-        console.log("net_amount",net_amount)
         const totalDue = Number(net_amount) + (Number(net_amount) * (parseFloat(tax) / 100));
-        console.log("totalDue", totalDue)
         setSelectedValues((prevValues) => ({
           ...prevValues,
           total_due: String(totalDue),
         }));
       }
     };
-
+  
     // Calculate balance when total_due and paid_amt change
     const calculateBalance = () => {
       const { total_due, paid_amt } = selectedValues;
       if (total_due !== null && paid_amt !== null) {
-        console.log(total_due, paid_amt)
         const balance = Number(total_due) - Number(paid_amt);
-        console.log("balance", balance)
         setSelectedValues((prevValues) => ({
           ...prevValues,
           balance: String(balance),
         }));
       }
     };
-
+  
     calculateNetAmount();
     calculateTotalDue();
     calculateBalance();

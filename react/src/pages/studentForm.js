@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import axios from 'axios'
 import './home.css'
+import moment from 'moment'
 import { useNavigate, useParams } from 'react-router-dom'
 const { TextArea } = Input;
 
@@ -270,6 +271,7 @@ const StudentForm = () => {
   if (loading || courseLoad) {
     return <h4>Loading</h4>
   }
+  
   return (
     <div className='container'>
       <div className='student-info'>
@@ -294,12 +296,11 @@ const StudentForm = () => {
           }}
         >
           <div className='form-controller'>
-
             <Form.Item className='form-data' name='fname' label="First Name">
               <Input />
             </Form.Item>
             <Form.Item name='dob' label="DOB">
-              <DatePicker />
+              <DatePicker defaultValue={moment(editStudentDetails?.dob)} />
             </Form.Item>
             <Form.Item name='mobile_no' label="Mobile No.">
               <Input type='number' />

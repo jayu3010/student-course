@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const studentdetails = require('../model/studentModel');
 const feesdetails = require('../model/studentFeesModel');
-
+const moment = require('moment')
 // Get all student details
 exports.getStudentdetails = async (req, res) => {
     try {
@@ -47,11 +47,13 @@ exports.getStudentDetailsbyid = async (req, res) => {
 exports.addStudent = async (req, res) => {
     console.log("req.body.branch",req.body.branch)
     try {
+
+        let date_of_birth = moment.utc(req.body.dob)
         let crud = new studentdetails({
             // Map request body properties to corresponding schema fields
             fname: req.body.fname,
             lname: req.body.lname,
-            dob: req.body.dob,
+            dob: date_of_birth,
             gender: req.body.gender,
             mobile_no: req.body.mobile_no,
             address: req.body.address,
