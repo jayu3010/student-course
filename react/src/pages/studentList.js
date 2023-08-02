@@ -51,15 +51,20 @@ const StudentList = () => {
       key: 'lname',
     },
     {
+      title: 'Branch',
+      dataIndex: 'branch',
+      key: 'branch',
+    },
+    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       render: (_, record) => {
-        console.log("defaultValue={}", record.status)
+
         return (
           <Select value={record?.status} onChange={(value) => handleStatusSelect(value, record._id)}>
             <Select.Option value="Active">Active</Select.Option>
-            <Select.Option value="InActive">Inactive</Select.Option>
+            <Select.Option value="InActive">InActive</Select.Option>
 
 
           </Select>)

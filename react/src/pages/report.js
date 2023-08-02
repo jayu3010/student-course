@@ -94,7 +94,7 @@ const Report = () => {
           Select Status
           <Select onChange={(value) => handleSelect(value, 'status')}>
             <Select.Option value="Active">Active</Select.Option>
-            <Select.Option value="Inactive">Inactive</Select.Option>
+            <Select.Option value="InActive">Inactive</Select.Option>
           </Select>
         </div>
         <div className='form-title'>
