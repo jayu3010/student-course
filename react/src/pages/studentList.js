@@ -6,6 +6,7 @@ import axios from 'axios';
 const StudentList = () => {
   const navigate = useNavigate();
   const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Function to delete a student by ID
   const handleDelete = async (studentId) => {
@@ -88,7 +89,8 @@ const StudentList = () => {
   const getStudents = async () => {
     try {
       const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
-      console.log("response", response?.data?.data);
+      setLoading(false)
+      // console.log("response", response?.data?.data);
       setStudents(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);
@@ -99,7 +101,9 @@ const StudentList = () => {
     getStudents(); // Fetch students on component mount
 
   }, []);
-
+if(loading){
+  return <h3>Loading Please Wait</h3>
+}
   return (
     <div>
       <Button onClick={() => navigate("/")}>Go to Home</Button>
