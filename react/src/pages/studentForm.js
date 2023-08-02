@@ -23,6 +23,8 @@ const StudentForm = () => {
   const [courseLoad, setCourseLoad] = useState(true);
 
   const [editStudentDetails, setEditStudentDetails] = useState();
+  const [branchData, setBranchData] = useState([]);
+
   const [selectedValues, setSelectedValues] = useState({
     end_date: '10-Jun-23',
     start_date: '10-Jun-23',
@@ -91,14 +93,13 @@ const StudentForm = () => {
     console.log('Selected values:', mergedValues);
     try {
       if (id) {
-    var editData = {id:id, ...values, ...selectedValues };
-console.log(editData)
+        var editData = { id: id, ...values, ...selectedValues };
+        // console.log(editData)
         // Editing existing student
         const editResponse = await axios.put('https://student-course-ru57.vercel.app/api/student/editstudent', editData);
-        console.log("editResponse", editResponse);
-        if(editResponse.data.code==200){
-          navigate("/student-form" )
-
+        // console.log("editResponse", editResponse);
+        if (editResponse.data.code == 200) {
+          navigate("/student-form")
         }
       } else {
         // Adding a new student
@@ -126,20 +127,32 @@ console.log(editData)
       if (response?.data?.code == 200) {
         setCourseLoad(false)
         setCourseData(response?.data?.data)
-        setSelectedValues({...selectedValues,course:response?.data?.data[0]?._id})
+        setSelectedValues({ ...selectedValues, course: response?.data?.data[0]?._id })
       }
 
     } catch (error) {
       console.log('Student list error:', error);
     }
   };
+  const getBranch = async () => {
+    try {
+      const response = await axios.get('http://localhost:3008/api/branch/getbranch');
+      console.log("Branch Response", response?.data?.data);
+      setBranchData(response?.data?.data)
+      setSelectedValues({ ...selectedValues, branch: response?.data?.data[0]?._id })
+
+    } catch (error) {
+      console.log('Branch list error:', error);
+    }
+  };
+
   useEffect(() => {
     setLoading(false)
     if (id) {
       setLoading(true)
       fetchStudentDetailsById(id)
     }
-
+    getBranch()
     getCourseDetails()
   }, [id])
 
@@ -161,7 +174,7 @@ console.log(editData)
           city: response?.data?.data?.city,
           state: response?.data?.data?.state,
         })
-       
+
 
         setLoading(false);
       }
@@ -207,12 +220,15 @@ console.log(editData)
       render: (_, record) => {
         return (
           <Select defaultValue={id ? editStudentDetails?.branch : selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
-            <Select.Option value="Bandra">Bandra</Select.Option>
-            <Select.Option value="Kandlivali">Kandlivali</Select.Option>
-            <Select.Option value="Andheri">Andheri</Select.Option>
-            <Select.Option value="Surat">Surat</Select.Option>
-            <Select.Option value="Vadodara">Vadodara</Select.Option>
-            <Select.Option value="Chennai">Chennai</Select.Option>
+            {
+              branchData?.map((bItame) => {
+                return (
+                  <>
+                    <Select.Option value={bItame?._id}>{bItame?.branch_name}</Select.Option>
+                  </>
+                )
+              })
+            }
 
           </Select>
         )
@@ -224,19 +240,19 @@ console.log(editData)
       dataIndex: 'course_name',
       key: 'course_name',
       render: (_, record) => {
-        console.log("courseData[0]?._id",courseData[0]?._id)
-                return (
-          <Select defaultValue={id ? editStudentDetails?.course?.course_name: courseData[0]?._id} onChange={(value) => handleSelect(value, 'course')}>
+        console.log("courseData[0]?._id", courseData[0]?._id)
+        return (
+          <Select defaultValue={id ? editStudentDetails?.course?.course_name : courseData[0]?._id} onChange={(value) => handleSelect(value, 'course')}>
             {
-             courseData?.map((cItem) => {
-                  return (
-                    <>
-                      <Select.Option value={cItem?._id}>{cItem?.course_name}</Select.Option>
-                    </>
-                  )
-
-                }
+              courseData?.map((cItem) => {
+                return (
+                  <>
+                    <Select.Option value={cItem?._id}>{cItem?.course_name}</Select.Option>
+                  </>
                 )
+
+              }
+              )
             }
           </Select>
         )
@@ -265,7 +281,7 @@ console.log(editData)
       key: 'status',
       render: (_, record) => {
         return (
-          <Select value={id ? editStudentDetails?.status : selectedValues?.status}  onChange={(value) => handleSelect(value, 'status')}>
+          <Select value={id ? editStudentDetails?.status : selectedValues?.status} onChange={(value) => handleSelect(value, 'status')}>
             <Select.Option value="Active">Active</Select.Option>
             <Select.Option value="InActive">Inactive</Select.Option>
 
@@ -282,11 +298,11 @@ console.log(editData)
   return (
     <div className='container'>
       <div className='student-info'>
-      <Button onClick={() => navigate("/student-form")}>Go to Home</Button>
+        <Button onClick={() => navigate("/student-form")}>Go to Home</Button>
 
         <Form
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 14 }}
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 13 }}
           layout="horizontal"
           validateMessages={validateMessages}
           onFinish={onFinish}
@@ -311,10 +327,10 @@ console.log(editData)
               <DatePicker />
             </Form.Item>
             <Form.Item name='mobile_no' label="Mobile No.">
-              <InputNumber />
+              <Input type='number' />
             </Form.Item>
             <Form.Item name='pincode' label="Pin Code">
-              <InputNumber />
+            <Input type='number' />
             </Form.Item>
             <Form.Item name='city' label="City">
               <Select onChange={(value) => handleSelect(value, 'city')}>

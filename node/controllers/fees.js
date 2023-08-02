@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const feesdetails = require('../model/studentFeesModal');
+const feesdetails = require('../model/studentFeesModel');
 
 // Get all fees details
 exports.getfeesdetails = async (req, res) => {

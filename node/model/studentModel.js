@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const genderEnum = ['M', 'F']
 const cityEnum = ["Ahemdabad", "Baroda", "Surat"]
 const stateEnum = ["Gujarat", "TamilNadu", "Delhi"]
-const branchEnum = ["Bandra", "Kandlivali", "Andheri", "Surat","Vadodara","Chennai"]
+// const branchEnum = ["Bandra", "Kandlivali", "Andheri", "Surat","Vadodara","Chennai"]
 const batchEnum = ["Morning", "Noon",  "Evening"]
 const statusEnum = ["Active", "InActive"]
 
@@ -21,7 +21,7 @@ const student_modal = new Schema({
    state: {type: String,enum: stateEnum},
    start_date: {type: String},
    end_date: {type: String},
-   branch: {type: String,enum: branchEnum},
+   branch: {type:  Schema.Types.ObjectId,ref: 'branch' },
    course: { type: Schema.Types.ObjectId, ref: 'course_model' },
    batch: {type: String,enum: batchEnum},
    status: {type: String,enum: statusEnum}

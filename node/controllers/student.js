@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const studentdetails = require('../model/studentModel');
-const feesdetails = require('../model/studentFeesModal');
+const feesdetails = require('../model/studentFeesModel');
 
 // Get all student details
 exports.getStudentdetails = async (req, res) => {
@@ -26,7 +26,7 @@ exports.getStudentdetails = async (req, res) => {
 exports.getStudentDetailsbyid = async (req, res) => {
     var id = req?.body?.id;
     try {
-        let data = await studentdetails.findById({ _id: id }).populate('course');
+        let data = await studentdetails.findById({ _id: id }).populate('course').populate('branch');
         console.log(data);
         res.json({
             code: 200,

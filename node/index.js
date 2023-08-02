@@ -7,26 +7,25 @@ const app = express()
 app.use(express.json());
 const router = require('./routes/index');
 app.use(cors());
-const Port=3008
- 
- async function connectToMongoDB() {
-    try {
-      console.log("process.env.MONGOURL",process.env.MONGOURL)
-      const res=await mongoose.connect(process.env.MONGOURL);
-      console.log('Connected to MongoDB');
+const Port = 3008
 
-    } catch (err) {
-      console.error('Error connecting to MongoDB:', err.message);
-    }
+async function connectToMongoDB() {
+  try {
+    const res = await mongoose.connect(process.env.MONGOURL);
+    console.log('Connected to MongoDB');
+
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err.message);
   }
-  
-  connectToMongoDB();
-  app.use('/api',router)
-  app.get('/',function(req,res){
-res.send("Success")
-  })
-  
-  
+}
+
+connectToMongoDB();
+app.use('/api', router)
+app.get('/', function (req, res) {
+  res.send("Success")
+})
+
+
 app.listen(Port, () => {
-    console.log(`Server is running on port ${Port}...`)
+  console.log(`Server is running on port ${Port}...`)
 })
