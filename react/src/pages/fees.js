@@ -1,7 +1,7 @@
 import { Button, DatePicker, Input, Select, Table } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Fees = () => {
   const { state } = useLocation();
@@ -28,7 +28,7 @@ const Fees = () => {
       id: id,
     };
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/course/getcoursebyid', body);
+      const response = await axios.post('http://localhost:3008/api/course/getcoursebyid', body);
       console.log("response", response?.data?.data);
       setCourseName(response?.data?.data);
     } catch (error) {
@@ -49,6 +49,7 @@ const Fees = () => {
       const { fees_amt, discount } = selectedValues;
       if (fees_amt !== null && discount !== null) {
         const netAmount = fees_amt - discount;
+        console.log("netAmount",netAmount)
         setSelectedValues((prevValues) => ({
           ...prevValues,
           net_amount: String(netAmount),
@@ -60,7 +61,9 @@ const Fees = () => {
     const calculateTotalDue = () => {
       const { net_amount, tax } = selectedValues;
       if (net_amount !== null && tax !== null) {
+        console.log("net_amount",net_amount)
         const totalDue = Number(net_amount) + (Number(net_amount) * (parseFloat(tax) / 100));
+        console.log("totalDue", totalDue)
         setSelectedValues((prevValues) => ({
           ...prevValues,
           total_due: String(totalDue),
@@ -72,7 +75,9 @@ const Fees = () => {
     const calculateBalance = () => {
       const { total_due, paid_amt } = selectedValues;
       if (total_due !== null && paid_amt !== null) {
+        console.log(total_due, paid_amt)
         const balance = Number(total_due) - Number(paid_amt);
+        console.log("balance", balance)
         setSelectedValues((prevValues) => ({
           ...prevValues,
           balance: String(balance),
@@ -88,7 +93,7 @@ const Fees = () => {
   // Fetch student details
   const getStudent = async () => {
     try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
+      const response = await axios.get('http://localhost:3008/api/student/getStudent');
       console.log("response", response?.data?.data);
       setStudentDetails(response?.data?.data);
     } catch (error) {
@@ -136,7 +141,7 @@ const Fees = () => {
       key: 'fees_amt',
       render: (_, record) => {
         return (
-          <Input value={selectedValues?.fees_amt}  onChange={(e) => handleSelect(e.target.value, 'fees_amt')} />
+          <Input value={selectedValues?.fees_amt} onChange={(e) => handleSelect(e.target.value, 'fees_amt')} />
         )
       }
     },
@@ -217,11 +222,11 @@ const Fees = () => {
     };
 
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/addfees', mergedValues);
+      const response = await axios.post('http://localhost:3008/api/fees/addfees', mergedValues);
       console.log("response", response);
       if (response.data.code === 200) {
         console.log("success");
-        navigate('/');
+        // navigate('/');
       }
     } catch (error) {
       console.log('Student list error:', error);
@@ -234,18 +239,19 @@ const Fees = () => {
       student_id: id,
     };
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/getfeesbystudent', body);
-console.log("response?.data?.data",response?.data?.data)
+      const response = await axios.post('http://localhost:3008/api/fees/getfeesbystudent', body);
+      console.log("response?.data?.data", response?.data?.data[0])
       setCourseName(response?.data?.data[0]?.course);
-     setSelectedValues({
-      date: null,
-      fees_amt: response?.data?.data[0].fees_amt,
-      discount: response?.data?.data[0].discount,
-      net_amount: response?.data?.data[0].net_amount,
-      tax: response?.data?.data[0].tax,
-      total_due: response?.data?.data[0].total_due,
-      paid_amt: response?.data?.data[0].paid_amt,
-      balance: response?.data?.data[0].balance,
+
+      setSelectedValues({
+        date: null,
+        fees_amt: response?.data?.data[0]?.fees_amt,
+        discount: response?.data?.data[0]?.discount,
+        net_amount: response?.data?.data[0]?.net_amt,
+        tax: response?.data?.data[0]?.tax,
+        total_due: response?.data?.data[0]?.total_due,
+        paid_amt: response?.data?.data[0]?.paid_amt,
+        balance: response?.data?.data[0]?.balance,
       })
     } catch (error) {
       console.log('Student list error:', error);

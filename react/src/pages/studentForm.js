@@ -4,23 +4,21 @@ import {
   DatePicker,
   Form,
   Input,
-  InputNumber,
   Select,
   Table,
 
 } from 'antd';
 import axios from 'axios'
 import './home.css'
-import Fees from './fees'
 import { useNavigate, useParams } from 'react-router-dom'
 const { TextArea } = Input;
 
 const StudentForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
-  const [courseLoad, setCourseLoad] = useState(true);
+  const [courseLoad, setCourseLoad] = useState(false);
 
   const [editStudentDetails, setEditStudentDetails] = useState();
   const [branchData, setBranchData] = useState([]);
@@ -28,8 +26,8 @@ const StudentForm = () => {
   const [selectedValues, setSelectedValues] = useState({
     end_date: '10-Jun-23',
     start_date: '10-Jun-23',
-    branch: 'Bandra',
-    course: 'IELTS',
+    branch: '',
+    course: '',
     batch: 'Morning',
     status: 'Active',
     city: 'Gujarat',
@@ -48,34 +46,6 @@ const StudentForm = () => {
       range: '${label} must be between ${min} and ${max}',
     },
   };
-  const branchOptions = ['Bandra', 'Kandlivali', 'Andheri', 'Surat', 'Vadodara', 'Chennai'];
-  const batchOptions = ['Morning', 'Noon', 'Evening'];
-  const statusOptions = ['Active', 'Inactive'];
-  // branch 
-  // Bandra
-  // Kandlivali
-  // Andheri
-  // Surat
-  // Vadodara
-  // Chennai
-
-  // batch
-  // Morning
-  // Noon
-  // Evening
-
-  // status
-
-  // Active
-  // Inactive
-
-
-  // cousre 
-  // GRE
-  // GMAT
-  // SAT
-  // IELTS
-
 
   const handleSelect = (value, name) => {
     console.log(value, name)
@@ -89,22 +59,22 @@ const StudentForm = () => {
   const onFinish = async (values) => {
     // Merge the form values and selectedValues
     var mergedValues = { ...values, ...selectedValues };
-    console.log('Form values:', values);
+    // console.log('Form values:', values);
     console.log('Selected values:', mergedValues);
     try {
       if (id) {
         var editData = { id: id, ...values, ...selectedValues };
         // console.log(editData)
         // Editing existing student
-        const editResponse = await axios.put('https://student-course-ru57.vercel.app/api/student/editstudent', editData);
+        const editResponse = await axios.put('http://localhost:3008/api/student/editstudent', editData);
         // console.log("editResponse", editResponse);
-        if (editResponse.data.code == 200) {
+        if (editResponse.data.code === 200) {
           navigate("/student-form")
         }
       } else {
         // Adding a new student
-        const response = await axios.post('https://student-course-ru57.vercel.app/api/student/addstudent', mergedValues);
-        console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
+        const response = await axios.post('http://localhost:3008/api/student/addstudent', mergedValues);
+        // console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
         if (response.data.code === 200) {
           navigate("/fees", {
             state: {
@@ -119,32 +89,7 @@ const StudentForm = () => {
     }
   };
 
-  const getCourseDetails = async () => {
-    // Merge the form values and selectedValues
-    try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/course/getcourse');
-      console.log("response", response?.data?.data)
-      if (response?.data?.code == 200) {
-        setCourseLoad(false)
-        setCourseData(response?.data?.data)
-        setSelectedValues({ ...selectedValues, course: response?.data?.data[0]?._id })
-      }
-
-    } catch (error) {
-      console.log('Student list error:', error);
-    }
-  };
-  const getBranch = async () => {
-    try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/branch/getbranch');
-      console.log("Branch Response", response?.data?.data);
-      setBranchData(response?.data?.data)
-      setSelectedValues({ ...selectedValues, branch: response?.data?.data[0]?._id })
-
-    } catch (error) {
-      console.log('Branch list error:', error);
-    }
-  };
+ 
 
   useEffect(() => {
     setLoading(false)
@@ -152,18 +97,49 @@ const StudentForm = () => {
       setLoading(true)
       fetchStudentDetailsById(id)
     }
-    getBranch()
-    getCourseDetails()
+    fatchData()
+    // getCourseDetails()
   }, [id])
+  // const getCourseDetails = async () => {
+  //   // Merge the form values and selectedValues
+  //   try {
+  //     // console.log("response", response?.data?.data)
+  //     if (response?.data?.code === 200) {
+  //       setCourseLoad(false)
+  //     }
 
+  //   } catch (error) {
+  //     console.log('Course list error:', error);
+  //   }
+  // };
+  const fatchData = async () => {
+    try {
+      const Corseresponse = await axios.get('http://localhost:3008/api/course/getcourse');
+      setCourseData(Corseresponse?.data?.data);
+  
+      const response = await axios.get('http://localhost:3008/api/branch/getbranch');
+      setBranchData(response?.data?.data);
+  
+      setSelectedValues((prevValues) => ({
+        ...prevValues,
+        course: Corseresponse?.data?.data[0]?._id,
+        branch: response?.data?.data[0]?._id,
+      }));
+    } catch (error) {
+      console.log('Branch list error:', error);
+    }
+  };
+  
+
+  console.log("selectedValues",selectedValues)
   const fetchStudentDetailsById = async (id) => {
     const body = { id };
     setCourseLoad(true)
 
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/student/getstudentbyid', body);
+      const response = await axios.post('http://localhost:3008/api/student/getstudentbyid', body);
       if (response?.data?.code === 200) {
-        console.log("response", response?.data?.data);
+        // console.log("response", response?.data?.data);
         setEditStudentDetails(response?.data?.data);
         setCourseLoad(false)
         setSelectedValues({
@@ -189,7 +165,7 @@ const StudentForm = () => {
       key: 'start_date',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ? editStudentDetails?.start_date : selectedValues?.start_date} onChange={(value) => handleSelect(value, 'start_date')}>
+          <Select value={id ? editStudentDetails?.start_date : selectedValues?.start_date} onChange={(value) => handleSelect(value, 'start_date')}>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
 
@@ -204,10 +180,9 @@ const StudentForm = () => {
       key: 'end_date',
       render: (_, record) => {
         return (
-          <Select size='large' defaultValue={id ? editStudentDetails?.end_date : selectedValues?.end_date} onChange={(value) => handleSelect(value, 'end_date')}>
+          <Select size='large' value={id ? editStudentDetails?.end_date : selectedValues?.end_date} onChange={(value) => handleSelect(value, 'end_date')}>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
             <Select.Option value="10-Jun-23">10-Jun-23</Select.Option>
-
           </Select>
         )
 
@@ -219,7 +194,7 @@ const StudentForm = () => {
       key: 'branch',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ? editStudentDetails?.branch?.branch_name : selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
+          <Select value={id ? editStudentDetails?.branch?.branch_name : selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
             {
               branchData?.map((bItame) => {
                 return (
@@ -242,7 +217,7 @@ const StudentForm = () => {
       render: (_, record) => {
         console.log("courseData[0]?._id", courseData[0]?._id)
         return (
-          <Select defaultValue={id ? editStudentDetails?.course?.course_name : courseData[0]?._id} onChange={(value) => handleSelect(value, 'course')}>
+          <Select value={id ? editStudentDetails?.course?.course_name : courseData[0]?._id} onChange={(value) => handleSelect(value, 'course')}>
             {
               courseData?.map((cItem) => {
                 return (
@@ -265,7 +240,7 @@ const StudentForm = () => {
       key: 'batch',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ? editStudentDetails?.batch : selectedValues?.batch} onChange={(value) => handleSelect(value, 'batch')}>
+          <Select value={id ? editStudentDetails?.batch : selectedValues?.batch} onChange={(value) => handleSelect(value, 'batch')}>
             <Select.Option value="Morning">Morning</Select.Option>
             <Select.Option value="Noon">Noon</Select.Option>
             <Select.Option value="Evening">Evening</Select.Option>

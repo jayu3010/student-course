@@ -55,7 +55,7 @@ const Report = () => {
   // Function to generate the report
   const generateReportData = async () => {
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/student/genrate-report', selectedValues);
+      const response = await axios.post('http://localhost:3008/api/student/genrate-report', selectedValues);
       console.log("response", response?.data?.data);
 
       if (response?.data?.code === 200) {
@@ -76,7 +76,7 @@ const Report = () => {
 
   const getBranch = async () => {
     try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/branch/getbranch');
+      const response = await axios.get('http://localhost:3008/api/branch/getbranch');
       // console.log("response student", response?.data?.data);
       setBranchData(response?.data?.data)
       setSelectedValues({ ...selectedValues, branch: response?.data?.data[0]?._id })

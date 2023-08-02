@@ -45,6 +45,7 @@ exports.getfeesbyStudentId = async (req, res) => {
 
 // Add fees for a student
 exports.addfees = async (req, res) => {
+    console.log("req",req.body)
     try {
         let crud = new feesdetails({
             paid_date: req.body.paid_date,
@@ -52,7 +53,7 @@ exports.addfees = async (req, res) => {
             student_id: req.body.student_id,
             fees_amt: req.body.fees_amt,
             discount: req.body.discount,
-            net_amt: req.body.net_amt,
+            net_amt: req.body.net_amount,
             tax: req.body.tax,
             total_due: req.body.total_due,
             paid_amt: req.body.paid_amt,

@@ -13,12 +13,9 @@ function App() {
 
       <Routes>
         <Route path='/' element={<Home />} />
-
         <Route path='/student-form' element={<StudentList />} />
         <Route path='/add-student' element={<StudentForm />} />
-
         <Route path='/edit-student/:id' element={<StudentForm />} />
-
         <Route path='/report' element={<Report />} />
         <Route path='/fees' element={<Fees />} />
       </Routes>
