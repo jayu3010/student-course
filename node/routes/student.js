@@ -9,6 +9,7 @@ router.post("/getstudentbyid", studentController.getStudentDetailsbyid)
 
 router.post("/addstudent", studentController.addStudent)
 router.put("/editstudent", studentController.editStudent)
+router.put("/update-status", studentController.updateStudentStatus)
 
 
 router.post("/genrate-report", studentController.getStudentReport)

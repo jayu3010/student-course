@@ -85,7 +85,6 @@ exports.addStudent = async (req, res) => {
 // Delete a student
 exports.deleteStudent = async (req, res) => {
     var id = req?.body?.id;
-console.log("iddddddd",id)
     console.log("in backend");
     try {
         let data = await studentdetails.deleteOne({ _id: id });
@@ -149,6 +148,7 @@ exports.getStudentReport = async (req, res) => {
     }
 };
 
+//Edit student
 exports.editStudent = async (req, res) => {
     try {
         let update = {
@@ -197,3 +197,39 @@ exports.editStudent = async (req, res) => {
     }
 };
 
+
+// Update Student Status
+exports.updateStudentStatus = async (req, res) => {
+    console.log(req.body)
+    try {
+        let update = {
+            status: req.body.status,
+        };
+
+        // Use await and set the "new" option to true to get the updated data
+        const data = await studentdetails.findByIdAndUpdate(req.body.id, update, { new: true });
+
+        if (!data) {
+            // Handle the case when the student with the given id is not found
+            return res.status(404).json({
+                code: 404,
+                status: 'failed',
+                message: 'Something Wrong',
+            });
+        } else {
+
+            return res.json({
+                code: 200,
+                data: data,
+                status: 'Status Updated Successfully',
+            });
+        }
+
+    } catch (err) {
+        res.status(400).json({
+            code: 400,
+            status: "failed",
+            message: err.message,
+        });
+    }
+}; 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Popconfirm, Space, Table } from 'antd';
+import { Button, Popconfirm, Select, Space, Table } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -14,7 +14,7 @@ const StudentList = () => {
         console.log("Invalid student ID:", studentId);
         return;
       }
-// local url:-http://localhost:3008/api/student/delete-student
+      // local url:-http://localhost:3008/api/student/delete-student
       const response = await axios.delete('https://student-course-ru57.vercel.app/api/student/delete-student', { data: { id: studentId } });
 
       console.log("response", response);
@@ -25,19 +25,45 @@ const StudentList = () => {
       console.log('Student list error:', error);
     }
   };
+  const handleStatusSelect = async (value, id) => {
 
+    var mergedValues = { id: id, status: value };
+    try {
+      const response = await axios.put('https://student-course-ru57.vercel.app/api/student/update-status', mergedValues);
+      console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
+      if (response.data.code === 200) {
+        getStudents()
+      }
+    } catch (error) {
+      console.log('Student list error:', error);
+    }
+  };
   const columns = [
     {
       title: 'First Name',
       dataIndex: 'fname',
       key: 'fname',
-      render: (text) => <a>{text}</a>,
+      // render: (text) => <a>{text}</a>,
     },
     {
       title: 'Last Name',
       dataIndex: 'lname',
       key: 'lname',
-      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (_, record) => {
+        console.log("defaultValue={}", record.status)
+        return (
+          <Select value={record?.status} onChange={(value) => handleStatusSelect(value, record._id)}>
+            <Select.Option value="Active">Active</Select.Option>
+            <Select.Option value="InActive">Inactive</Select.Option>
+
+
+          </Select>)
+      }
     },
     {
       title: 'Action',
