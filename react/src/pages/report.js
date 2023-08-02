@@ -1,5 +1,5 @@
 import { Button, Select, Table } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './home.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -9,10 +9,11 @@ const Report = () => {
 
   const [selectedValues, setSelectedValues] = useState({
     branch: '',
-    status: '',
+    status: 'Active',
   });
 
   const [generateReport, setGenerateReport] = useState([]);
+  const [branchData, setBranchData] = useState([]);
 
   const columns = [
     {
@@ -73,6 +74,20 @@ const Report = () => {
     }));
   };
 
+  const getBranch = async () => {
+    try {
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/branch/getbranch');
+      // console.log("response student", response?.data?.data);
+      setBranchData(response?.data?.data)
+      setSelectedValues({ ...selectedValues, branch: response?.data?.data[0]?._id })
+
+    } catch (error) {
+      console.log('Student list error:', error);
+    }
+  };
+  useEffect(()=>{
+    getBranch()
+  },[])
   return (
     <div>
       <Button onClick={() => navigate("/")}>Go to Home</Button>
@@ -81,18 +96,21 @@ const Report = () => {
       <div className='form-group'>
         <div className='form-title'>
           Select Branch
-          <Select onChange={(value) => handleSelect(value, 'branch')}>
-            <Select.Option value="Bandra">Bandra</Select.Option>
-            <Select.Option value="Kandlivali">Kandlivali</Select.Option>
-            <Select.Option value="Andheri">Andheri</Select.Option>
-            <Select.Option value="Surat">Surat</Select.Option>
-            <Select.Option value="Vadodara">Vadodara</Select.Option>
-            <Select.Option value="Chennai">Chennai</Select.Option>
+          <Select value={selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
+          {
+              branchData?.map((bItame) => {
+                return (
+                  <>
+                    <Select.Option value={bItame?._id}>{bItame?.branch_name}</Select.Option>
+                  </>
+                )
+              })
+            }
           </Select>
         </div>
         <div className='form-title'>
           Select Status
-          <Select onChange={(value) => handleSelect(value, 'status')}>
+          <Select value={selectedValues?.status} onChange={(value) => handleSelect(value, 'status')}>
             <Select.Option value="Active">Active</Select.Option>
             <Select.Option value="InActive">InActive</Select.Option>
           </Select>
