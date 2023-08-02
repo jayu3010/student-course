@@ -136,7 +136,7 @@ const StudentForm = () => {
   };
   const getBranch = async () => {
     try {
-      const response = await axios.get('http://localhost:3008/api/branch/getbranch');
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/branch/getbranch');
       console.log("Branch Response", response?.data?.data);
       setBranchData(response?.data?.data)
       setSelectedValues({ ...selectedValues, branch: response?.data?.data[0]?._id })
