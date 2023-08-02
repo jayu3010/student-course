@@ -219,7 +219,7 @@ const StudentForm = () => {
       key: 'branch',
       render: (_, record) => {
         return (
-          <Select defaultValue={id ? editStudentDetails?.branch : selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
+          <Select defaultValue={id ? editStudentDetails?.branch?.branch_name : selectedValues?.branch} onChange={(value) => handleSelect(value, 'branch')}>
             {
               branchData?.map((bItame) => {
                 return (

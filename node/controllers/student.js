@@ -5,7 +5,7 @@ const feesdetails = require('../model/studentFeesModel');
 // Get all student details
 exports.getStudentdetails = async (req, res) => {
     try {
-        let data = await studentdetails.find();
+        let data = await studentdetails.find().populate('branch');
         console.log(data);
         res.json({
             code: 200,
@@ -45,6 +45,7 @@ exports.getStudentDetailsbyid = async (req, res) => {
 
 // Add a new student
 exports.addStudent = async (req, res) => {
+    console.log("req.body.branch",req.body.branch)
     try {
         let crud = new studentdetails({
             // Map request body properties to corresponding schema fields

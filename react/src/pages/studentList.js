@@ -55,6 +55,10 @@ const StudentList = () => {
       title: 'Branch',
       dataIndex: 'branch',
       key: 'branch',
+      render: (_, record) => {
+
+      return <>{record?.branch?.branch_name}</>
+      }
     },
     {
       title: 'Status',
@@ -66,8 +70,6 @@ const StudentList = () => {
           <Select value={record?.status} onChange={(value) => handleStatusSelect(value, record._id)}>
             <Select.Option value="Active">Active</Select.Option>
             <Select.Option value="InActive">InActive</Select.Option>
-
-
           </Select>)
       }
     },
@@ -90,7 +92,7 @@ const StudentList = () => {
     try {
       const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
       setLoading(false)
-      // console.log("response", response?.data?.data);
+      // console.log("response student", response?.data?.data);
       setStudents(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);
