@@ -7,7 +7,10 @@ export default class Service {
     //     process.env.NODE_ENV === "production"
     //       ? process.env.REACT_APP_API_URL + "/api"
     //       : `${this.Server_Base_URL}/api`;
-    static API_URL = 'http://localhost:3008/api'
+    
+    // http://localhost:3008/api
+    static API_URL = ' https://student-course-ru57.vercel.app/api'
+    
     static API_Call_Counter = 0;
     static incre_API_Call_Counter = () => this.API_Call_Counter++;
     static decre_API_Call_Counter = () =>
