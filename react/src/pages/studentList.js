@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Popconfirm, Select, Space, Table } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import Service from '../service';
 
 const StudentList = () => {
   const navigate = useNavigate();
@@ -15,8 +15,13 @@ const StudentList = () => {
         console.log("Invalid student ID:", studentId);
         return;
       }
-      // local url:-https://student-course-ru57.vercel.app/api/student/delete-student
-      const response = await axios.delete('https://student-course-ru57.vercel.app/api/student/delete-student', { data: { id: studentId } });
+      const response = await Service.makeAPICall({
+        methodName: Service.deleteMethod,
+        api_url: Service.deletestudent,
+        body: { id: studentId },
+
+      });
+      // local url:-http://localhost:3008/api/student/delete-student
 
       console.log("response", response);
       if (response?.data?.code === 200) {
@@ -30,8 +35,12 @@ const StudentList = () => {
 
     var mergedValues = { id: id, status: value };
     try {
-      const response = await axios.put('https://student-course-ru57.vercel.app/api/student/update-status', mergedValues);
-      console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
+      const response = await Service.makeAPICall({
+        methodName: Service.putMethod,
+        api_url: Service.updatestatus,
+        body: mergedValues,
+
+      });
       if (response.data.code === 200) {
         getStudents()
       }
@@ -90,9 +99,11 @@ const StudentList = () => {
   // Function to fetch the list of students
   const getStudents = async () => {
     try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
+      const response = await Service.makeAPICall({
+        methodName: Service.getMethod,
+        api_url: Service.getStudent,
+      });
       setLoading(false)
-      // console.log("response student", response?.data?.data);
       setStudents(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);

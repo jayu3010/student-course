@@ -7,5 +7,6 @@ router.post("/addfees", feesController.addfees)
 router.post("/getfeesbystudent", feesController.getfeesbyStudentId)
 
 
+router.put("/update-fees", feesController.updateFees)
 
 module.exports = router;

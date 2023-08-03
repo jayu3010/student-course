@@ -1,9 +1,8 @@
 import { Button, DatePicker, Input, Select, Table } from 'antd';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import moment from 'moment'
-
+import Service from '../service';
 const Fees = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -17,20 +16,28 @@ const Fees = () => {
     total_due: null,
     paid_amt: null,
     balance: null,
+    course: ''
   });
   const [courseName, setCourseName] = useState();
   const [studentDetails, setStudentDetails] = useState();
+  const [laoding, setLaoding] = useState(true);
+
+  const [courseData, setCourseData] = useState([]);
+  const [studentId, setStudentId] = useState();
 
 
 
   // Fetch student details by course ID
   const getStudentByCourse = async (id) => {
-    var body = {
-      id: id,
-    };
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/course/getcoursebyid', body);
-      console.log("response", response?.data?.data);
+      var body = {
+        id: id,
+      };
+      const response = await Service.makeAPICall({
+        methodName: Service.postMethod,
+        api_url: Service.getcoursebyid,
+        body:body
+      });
       setCourseName(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);
@@ -42,7 +49,26 @@ const Fees = () => {
       getStudentByCourse(state?.course_id);
     }
     getStudent();
+    fatchData()
   }, []);
+  const fatchData = async () => {
+    try {
+      const Courseresponse = await Service.makeAPICall({
+        methodName: Service.getMethod,
+        api_url: Service.getcourse,
+      });
+      setCourseData(Courseresponse?.data?.data);
+      setLaoding(false)
+
+
+      setSelectedValues((prevValues) => ({
+        ...prevValues,
+        course: Courseresponse?.data?.data[0]?._id,
+      }));
+    } catch (error) {
+      console.log('Course list error:', error);
+    }
+  };
 
   useEffect(() => {
     // Calculate net_amount when fees_amt and discount change
@@ -50,7 +76,7 @@ const Fees = () => {
       const { fees_amt, discount } = selectedValues;
       if (fees_amt !== null && discount !== null) {
         const netAmount = fees_amt - discount;
-        console.log("123456",netAmount)
+        console.log("123456", netAmount)
 
         setSelectedValues((prevValues) => ({
           ...prevValues,
@@ -58,12 +84,12 @@ const Fees = () => {
         }));
       }
     };
-  
+
     // Calculate total_due when net_amount and tax change
     const calculateTotalDue = () => {
       const { net_amount, tax } = selectedValues;
       if (net_amount !== null && tax !== null) {
-        console.log("net_amount",net_amount)
+        console.log("net_amount", net_amount)
         const totalDue = Number(net_amount) + (Number(net_amount) * (parseFloat(tax) / 100));
         setSelectedValues((prevValues) => ({
           ...prevValues,
@@ -71,7 +97,7 @@ const Fees = () => {
         }));
       }
     };
-  
+
     // Calculate balance when total_due and paid_amt change
     const calculateBalance = () => {
       const { total_due, paid_amt } = selectedValues;
@@ -83,17 +109,19 @@ const Fees = () => {
         }));
       }
     };
-  
+
     calculateNetAmount();
     calculateTotalDue();
     calculateBalance();
-  }, [selectedValues.fees_amt,selectedValues.balance,selectedValues.net_amount, selectedValues.discount, selectedValues.tax, selectedValues.paid_amt]);
+  }, [selectedValues.fees_amt, selectedValues.balance, selectedValues.net_amount, selectedValues.discount, selectedValues.tax, selectedValues.paid_amt]);
 
   // Fetch student details
   const getStudent = async () => {
     try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
-      console.log("response", response?.data?.data);
+      const response = await Service.makeAPICall({
+        methodName: Service.getMethod,
+        api_url: Service.getStudent,
+      });
       setStudentDetails(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);
@@ -114,10 +142,9 @@ const Fees = () => {
       dataIndex: 'paid_date',
       key: 'paid_date',
       render: (_, record) => {
-        console.log("selectedValues?.paid_date",moment(selectedValues?.paid_date))
         return (
-          <>  
-          <DatePicker onChange={(value) => handleSelect(value, 'paid_date')} />
+          <>
+            <DatePicker onChange={(value) => handleSelect(value, 'paid_date')} />
 
           </>
         )
@@ -128,9 +155,21 @@ const Fees = () => {
       dataIndex: 'course',
       key: 'course',
       render: (_, record) => {
+        // console.log("courseData[0]?._id", courseData[0]?._id)
         return (
-          <Input name="course" value={courseName?.course_name} />
+          <Select value={selectedValues?.course} onChange={(value) => handleSelect(value, 'course')}>
+            {
+              courseData?.map((cItem) => {
+                return (
+                  <>
+                    <Select.Option value={cItem?._id}>{cItem?.course_name}</Select.Option>
+                  </>
+                )
 
+              }
+              )
+            }
+          </Select>
         )
 
       }
@@ -220,30 +259,38 @@ const Fees = () => {
       course: courseName?._id,
       ...selectedValues,
     };
+    // console.log("mergedValues",mergedValues)
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/addfees', mergedValues);
-      console.log("response", response);
+      const response = await Service.makeAPICall({
+        methodName: Service.postMethod,
+        api_url: Service.addfees,
+        body: mergedValues
+      });
       if (response.data.code === 200) {
         console.log("success");
-        // navigate('/');
+        navigate('/');
       }
     } catch (error) {
-      console.log('Student list error:', error);
+      console.log('Student Add error:', error);
     }
   };
 
   // Function to handle selecting a student
   const handleSelectStudent = async (id) => {
-    var body = {
-      student_id: id,
-    };
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/getfeesbystudent', body);
-      console.log("response?.data?.data", response?.data?.data[0])
+      var body = {
+        student_id: id,
+      };
+      setStudentId(id)
+      const response = await Service.makeAPICall({
+        methodName: Service.postMethod,
+        api_url: Service.getfeesbystudent,
+        body: body
+      });
       setCourseName(response?.data?.data[0]?.course);
-
       setSelectedValues({
-        paid_date:  response?.data?.data[0]?.paid_date,
+        course: response?.data?.data[0]?.course._id,
+        paid_date: response?.data?.data[0]?.paid_date,
         fees_amt: response?.data?.data[0]?.fees_amt,
         discount: response?.data?.data[0]?.discount,
         net_amount: response?.data?.data[0]?.net_amt,
@@ -256,6 +303,31 @@ const Fees = () => {
       console.log('Student list error:', error);
     }
   };
+  const handleUpdate = async () => {
+    const mergedValues = {
+      student_id: studentId,
+      course: courseName?._id,
+      ...selectedValues,
+    };
+    // console.log("mergedValues",mergedValues)
+    try {
+      const response = await Service.makeAPICall({
+        methodName: Service.putMethod,
+        api_url: Service.updatefees,
+        body: mergedValues
+      });
+      // console.log("response", response);
+      if (response.data.code === 200) {
+        console.log("success");
+        navigate('/');
+      }
+    } catch (error) {
+      console.log('Student list error:', error);
+    }
+  }
+  if (laoding) {
+    return <h3>Loading</h3>
+  }
 
   return (
     <div>
@@ -273,7 +345,11 @@ const Fees = () => {
         </Select> : ""
       }
       <Table pagination={false} dataSource={[{}]} columns={columns} />
-      <Button onClick={handleFees}>Submit Student Fees</Button>
+      {
+        !state ?
+          <Button onClick={handleUpdate}>Update Student Fees</Button> :
+          <Button onClick={handleFees}>Submit Student Fees</Button>
+      }
     </div>
   );
 };

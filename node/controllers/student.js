@@ -45,7 +45,6 @@ exports.getStudentDetailsbyid = async (req, res) => {
 
 // Add a new student
 exports.addStudent = async (req, res) => {
-    console.log("req.body.branch",req.body.branch)
     try {
 
         let date_of_birth = moment.utc(req.body.dob)
@@ -88,9 +87,11 @@ exports.addStudent = async (req, res) => {
 // Delete a student
 exports.deleteStudent = async (req, res) => {
     var id = req?.body?.id;
-    console.log("in backend");
+
     try {
-        let data = await studentdetails.deleteOne({ _id: id });
+        const studentId = id;
+        await mongoose.model('fees_model').deleteMany({ student_id: studentId });
+        let data = await studentdetails.findByIdAndRemove(id);
         console.log(data);
         res.json({
             code: 200,

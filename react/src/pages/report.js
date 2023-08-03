@@ -2,7 +2,7 @@ import { Button, Select, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import './home.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import Service from '../service';
 
 const Report = () => {
   const navigate = useNavigate();
@@ -55,14 +55,18 @@ const Report = () => {
   // Function to generate the report
   const generateReportData = async () => {
     try {
-      const response = await axios.post('https://student-course-ru57.vercel.app/api/student/genrate-report', selectedValues);
-      console.log("response", response?.data?.data);
+      const response = await Service.makeAPICall({
+        methodName: Service.postMethod,
+        api_url: Service.genrateReport,
+        body:selectedValues
+      });
+      // console.log("response", response?.data?.data);
 
       if (response?.data?.code === 200) {
         setGenerateReport(response?.data?.data);
       }
     } catch (error) {
-      console.log('Student list error:', error);
+      console.log('Generate Report list error:', error);
     }
   };
 
@@ -76,7 +80,10 @@ const Report = () => {
 
   const getBranch = async () => {
     try {
-      const response = await axios.get('https://student-course-ru57.vercel.app/api/branch/getbranch');
+      const response = await Service.makeAPICall({
+        methodName: Service.getMethod,
+        api_url: Service.getbranch,
+      });
       // console.log("response student", response?.data?.data);
       setBranchData(response?.data?.data)
       setSelectedValues({ ...selectedValues, branch: response?.data?.data[0]?._id })

@@ -46,12 +46,11 @@ exports.getfeesbyStudentId = async (req, res) => {
 
 // Add fees for a student
 exports.addfees = async (req, res) => {
-    console.log("req",req.body)
+    console.log("req", req.body)
     try {
         let paid_date_student = moment.utc(req?.body?.paid_date)
-    console.log("paid_date",paid_date)
         let crud = new feesdetails({
-            paid_date: paid_date,
+            paid_date: paid_date_student,
             course: req.body.course,
             student_id: req.body.student_id,
             fees_amt: req.body.fees_amt,
@@ -74,6 +73,69 @@ exports.addfees = async (req, res) => {
             code: 400,
             status: "failed",
             message: err,
+        });
+    }
+};
+exports.updateFees = async (req, res) => {
+    try {
+        const id = req.body.student_id;
+
+        // Find the fees_model document by student_id
+        const feesDetail = await feesdetails.findOne({ student_id: id });
+
+        if (!feesDetail) {
+            return res.status(404).json({
+                code: 404,
+                status: "failed",
+                message: "Student with the given ID not found",
+            });
+        }
+        let paid_date_student = moment.utc(req?.body?.paid_date)
+        if (req.body.paid_date) {
+            feesDetail.paid_date = paid_date_student;
+        }
+
+        if (req.body.net_amt) {
+            feesDetail.net_amt = req.body.net_amt;
+        }
+        if (req.body.tax) {
+            feesDetail.tax = req.body.tax;
+        }
+        if (req.body.total_due) {
+            feesDetail.total_due = req.body.total_due;
+        }
+        if (req.body.paid_amt) {
+            feesDetail.paid_amt = req.body.paid_amt;
+        }
+        if (req.body.balance) {
+            feesDetail.balance = req.body.balance;
+        }
+        // Update the fields if provided in the request body
+        if (req.body.course) {
+            feesDetail.course = req.body.course;
+        }
+        if (req.body.fees_amt) {
+            feesDetail.fees_amt = req.body.fees_amt;
+        }
+        if (req.body.discount) {
+            feesDetail.discount = req.body.discount;
+        }
+        // Add other fields to be updated similarly
+
+        // Save the updated document
+        const updatedFeesDetail = await feesDetail.save();
+
+        return res.json({
+            code: 200,
+            data: updatedFeesDetail,
+            status: "Student Fees Updated Successfully",
+        });
+    } catch (err) {
+        console.log("errrr", err);
+        res.json({
+            code: 400,
+            status: "failed",
+            message: err.message,
         });
     }
 };
