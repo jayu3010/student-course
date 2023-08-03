@@ -12,6 +12,7 @@ import axios from 'axios'
 import './home.css'
 import moment from 'moment'
 import { useNavigate, useParams } from 'react-router-dom'
+import Service from '../service';
 const { TextArea } = Input;
 
 const StudentForm = () => {
@@ -61,26 +62,32 @@ const StudentForm = () => {
     // Merge the form values and selectedValues
     var mergedValues = { ...values, ...selectedValues };
     // console.log('Form values:', values);
-    console.log('Selected values:', mergedValues);
+
     try {
       if (id) {
         var editData = { id: id, ...values, ...selectedValues };
         // console.log(editData)
         // Editing existing student
-        const editResponse = await axios.put('http://localhost:3008/api/student/editstudent', editData);
-        // console.log("editResponse", editResponse);
+        const editResponse = await Service.makeAPICall({
+          methodName: Service.putMethod,
+          api_url: Service.editstudent,
+          body:editData
+        });
         if (editResponse.data.code === 200) {
           navigate("/student-form")
         }
       } else {
         // Adding a new student
-        const response = await axios.post('http://localhost:3008/api/student/addstudent', mergedValues);
-        // console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
-        if (response.data.code === 200) {
+        const addResponse = await Service.makeAPICall({
+          methodName: Service.postMethod,
+          api_url: Service.addstudent,
+          body:mergedValues
+        });
+        if (addResponse.data.code === 200) {
           navigate("/fees", {
             state: {
-              student_id: response?.data?.data?._id,
-              course_id: response?.data?.data?.course,
+              student_id: addResponse?.data?.data?._id,
+              course_id: addResponse?.data?.data?.course,
             },
           });
         }
@@ -99,46 +106,43 @@ const StudentForm = () => {
       fetchStudentDetailsById(id)
     }
     fatchData()
-    // getCourseDetails()
   }, [id])
-  // const getCourseDetails = async () => {
-  //   // Merge the form values and selectedValues
-  //   try {
-  //     // console.log("response", response?.data?.data)
-  //     if (response?.data?.code === 200) {
-  //       setCourseLoad(false)
-  //     }
 
-  //   } catch (error) {
-  //     console.log('Course list error:', error);
-  //   }
-  // };
   const fatchData = async () => {
     try {
-      const Corseresponse = await axios.get('http://localhost:3008/api/course/getcourse');
-      setCourseData(Corseresponse?.data?.data);
-  
-      const response = await axios.get('http://localhost:3008/api/branch/getbranch');
-      setBranchData(response?.data?.data);
-  
+      const courseResponse = await Service.makeAPICall({
+        methodName: Service.getMethod,
+        api_url: Service.getcourse,
+
+      });
+      const branchResponse = await Service.makeAPICall({
+        methodName: Service.getMethod,
+        api_url: Service.getbranch,
+
+      });
+
+      setCourseData(courseResponse?.data?.data);
+      setBranchData(branchResponse?.data?.data);
       setSelectedValues((prevValues) => ({
         ...prevValues,
-        course: Corseresponse?.data?.data[0]?._id,
-        branch: response?.data?.data[0]?._id,
+        course: courseResponse?.data?.data[0]?._id,
+        branch: branchResponse?.data?.data[0]?._id,
       }));
     } catch (error) {
-      console.log('Branch list error:', error);
+      console.log('list error:', error);
     }
   };
-  
 
-  console.log("selectedValues",selectedValues)
   const fetchStudentDetailsById = async (id) => {
     const body = { id };
     setCourseLoad(true)
-
+   
     try {
-      const response = await axios.post('http://localhost:3008/api/student/getstudentbyid', body);
+      const response = await Service.makeAPICall({
+        methodName: Service.postMethod,
+        api_url: Service.getstudentbyid,
+        body:body
+      });
       if (response?.data?.code === 200) {
         // console.log("response", response?.data?.data);
         setEditStudentDetails(response?.data?.data);
