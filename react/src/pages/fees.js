@@ -30,14 +30,8 @@ const Fees = () => {
   // Fetch student details by course ID
   const getStudentByCourse = async (id) => {
     try {
-      var body = {
-        id: id,
-      };
-      const response = await Service.makeAPICall({
-        methodName: Service.postMethod,
-        api_url: Service.getcoursebyid,
-        body:body
-      });
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/course/getcoursebyid', body);
+      console.log("response", response?.data?.data);
       setCourseName(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);
@@ -118,10 +112,8 @@ const Fees = () => {
   // Fetch student details
   const getStudent = async () => {
     try {
-      const response = await Service.makeAPICall({
-        methodName: Service.getMethod,
-        api_url: Service.getStudent,
-      });
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/student/getStudent');
+      console.log("response", response?.data?.data);
       setStudentDetails(response?.data?.data);
     } catch (error) {
       console.log('Student list error:', error);
@@ -261,11 +253,8 @@ const Fees = () => {
     };
     // console.log("mergedValues",mergedValues)
     try {
-      const response = await Service.makeAPICall({
-        methodName: Service.postMethod,
-        api_url: Service.addfees,
-        body: mergedValues
-      });
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/addfees', mergedValues);
+      console.log("response", response);
       if (response.data.code === 200) {
         console.log("success");
         navigate('/');
@@ -278,15 +267,8 @@ const Fees = () => {
   // Function to handle selecting a student
   const handleSelectStudent = async (id) => {
     try {
-      var body = {
-        student_id: id,
-      };
-      setStudentId(id)
-      const response = await Service.makeAPICall({
-        methodName: Service.postMethod,
-        api_url: Service.getfeesbystudent,
-        body: body
-      });
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/fees/getfeesbystudent', body);
+      console.log("response?.data?.data", response?.data?.data[0])
       setCourseName(response?.data?.data[0]?.course);
       setSelectedValues({
         course: response?.data?.data[0]?.course._id,
