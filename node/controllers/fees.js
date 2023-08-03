@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const feesdetails = require('../model/studentFeesModel');
+const moment = require('moment')
 
 // Get all fees details
 exports.getfeesdetails = async (req, res) => {
@@ -47,8 +48,10 @@ exports.getfeesbyStudentId = async (req, res) => {
 exports.addfees = async (req, res) => {
     console.log("req",req.body)
     try {
+        let paid_date_student = moment.utc(req?.body?.paid_date)
+    console.log("paid_date",paid_date)
         let crud = new feesdetails({
-            paid_date: req.body.paid_date,
+            paid_date: paid_date,
             course: req.body.course,
             student_id: req.body.student_id,
             fees_amt: req.body.fees_amt,

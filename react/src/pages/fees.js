@@ -2,13 +2,14 @@ import { Button, DatePicker, Input, Select, Table } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import moment from 'moment'
 
 const Fees = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
   const [selectedValues, setSelectedValues] = useState({
-    date: null,
+    paid_date: '',
     fees_amt: null,
     discount: null,
     net_amount: null,
@@ -49,6 +50,8 @@ const Fees = () => {
       const { fees_amt, discount } = selectedValues;
       if (fees_amt !== null && discount !== null) {
         const netAmount = fees_amt - discount;
+        console.log("123456",netAmount)
+
         setSelectedValues((prevValues) => ({
           ...prevValues,
           net_amount: String(netAmount),
@@ -60,6 +63,7 @@ const Fees = () => {
     const calculateTotalDue = () => {
       const { net_amount, tax } = selectedValues;
       if (net_amount !== null && tax !== null) {
+        console.log("net_amount",net_amount)
         const totalDue = Number(net_amount) + (Number(net_amount) * (parseFloat(tax) / 100));
         setSelectedValues((prevValues) => ({
           ...prevValues,
@@ -83,7 +87,7 @@ const Fees = () => {
     calculateNetAmount();
     calculateTotalDue();
     calculateBalance();
-  }, [selectedValues.fees_amt, selectedValues.discount, selectedValues.tax, selectedValues.paid_amt]);
+  }, [selectedValues.fees_amt,selectedValues.balance,selectedValues.net_amount, selectedValues.discount, selectedValues.tax, selectedValues.paid_amt]);
 
   // Fetch student details
   const getStudent = async () => {
@@ -110,9 +114,10 @@ const Fees = () => {
       dataIndex: 'paid_date',
       key: 'paid_date',
       render: (_, record) => {
+        console.log("selectedValues?.paid_date",moment(selectedValues?.paid_date))
         return (
-          <>
-            <DatePicker onChange={(value) => handleSelect(value, 'date')} />
+          <>  
+          <DatePicker onChange={(value) => handleSelect(value, 'paid_date')} />
 
           </>
         )
@@ -215,7 +220,6 @@ const Fees = () => {
       course: courseName?._id,
       ...selectedValues,
     };
-
     try {
       const response = await axios.post('http://localhost:3008/api/fees/addfees', mergedValues);
       console.log("response", response);
@@ -239,7 +243,7 @@ const Fees = () => {
       setCourseName(response?.data?.data[0]?.course);
 
       setSelectedValues({
-        date: null,
+        paid_date:  response?.data?.data[0]?.paid_date,
         fees_amt: response?.data?.data[0]?.fees_amt,
         discount: response?.data?.data[0]?.discount,
         net_amount: response?.data?.data[0]?.net_amt,

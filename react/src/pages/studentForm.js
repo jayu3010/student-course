@@ -300,7 +300,12 @@ const StudentForm = () => {
               <Input />
             </Form.Item>
             <Form.Item name='dob' label="DOB">
-              <DatePicker defaultValue={moment(editStudentDetails?.dob)} />
+              {
+                id ?
+                <DatePicker defaultValue={moment(editStudentDetails?.dob)} />:
+
+              <DatePicker />
+              }
             </Form.Item>
             <Form.Item name='mobile_no' label="Mobile No.">
               <Input type='number' />
