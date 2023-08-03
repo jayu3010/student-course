@@ -67,14 +67,14 @@ const StudentForm = () => {
         var editData = { id: id, ...values, ...selectedValues };
         // console.log(editData)
         // Editing existing student
-        const editResponse = await axios.put('http://localhost:3008/api/student/editstudent', editData);
+        const editResponse = await axios.put('https://student-course-ru57.vercel.app/api/student/editstudent', editData);
         // console.log("editResponse", editResponse);
         if (editResponse.data.code === 200) {
           navigate("/student-form")
         }
       } else {
         // Adding a new student
-        const response = await axios.post('http://localhost:3008/api/student/addstudent', mergedValues);
+        const response = await axios.post('https://student-course-ru57.vercel.app/api/student/addstudent', mergedValues);
         // console.log("response", response, response?.data?.data?._id, response?.data?.data?.course);
         if (response.data.code === 200) {
           navigate("/fees", {
@@ -115,10 +115,10 @@ const StudentForm = () => {
   // };
   const fatchData = async () => {
     try {
-      const Corseresponse = await axios.get('http://localhost:3008/api/course/getcourse');
+      const Corseresponse = await axios.get('https://student-course-ru57.vercel.app/api/course/getcourse');
       setCourseData(Corseresponse?.data?.data);
   
-      const response = await axios.get('http://localhost:3008/api/branch/getbranch');
+      const response = await axios.get('https://student-course-ru57.vercel.app/api/branch/getbranch');
       setBranchData(response?.data?.data);
   
       setSelectedValues((prevValues) => ({
@@ -138,7 +138,7 @@ const StudentForm = () => {
     setCourseLoad(true)
 
     try {
-      const response = await axios.post('http://localhost:3008/api/student/getstudentbyid', body);
+      const response = await axios.post('https://student-course-ru57.vercel.app/api/student/getstudentbyid', body);
       if (response?.data?.code === 200) {
         // console.log("response", response?.data?.data);
         setEditStudentDetails(response?.data?.data);
